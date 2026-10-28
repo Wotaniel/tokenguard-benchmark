@@ -64,7 +64,7 @@
   .brow .bv small{display:block;font-size:10.5px;color:var(--dim);font-weight:500}
 
   /* вердикты */
-  .verdicts{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+  .verdicts{display:grid;grid-template-columns:1fr;gap:12px;margin-top:14px}
   .vd{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--line);border-radius:12px;padding:15px 17px}
   .vd .who{font-weight:700;font-size:13.5px;margin-bottom:4px}
   .vd .txt{color:var(--muted);font-size:12.8px}
@@ -82,25 +82,21 @@
       <div class="sc" style="color:var(--dsv)">9<small>/10</small></div>
       <div class="nm">DeepSeek V4.1</div>
       <div class="rl">самое богатое движение, самопроверка пиксельным диффом</div>
-      <div class="lnk"><a href="https://wotaniel.github.io/ag-anim-dsv41flash/">Pages ↗</a><a href="https://github.com/Wotaniel/ag-anim-dsv41flash">репо ↗</a></div>
     </div>
     <div class="mc" style="border-top-color:var(--hai)">
       <div class="sc" style="color:var(--hai)">9<small>/10</small></div>
       <div class="nm">Haiku 5.5</div>
       <div class="rl">то же качество, но в 4 раза дороже DeepSeek</div>
-      <div class="lnk"><a href="https://wotaniel.github.io/ag-anim-haiku55/">Pages ↗</a><a href="https://github.com/Wotaniel/ag-anim-haiku55">репо ↗</a></div>
     </div>
     <div class="mc" style="border-top-color:var(--glm)">
       <div class="sc" style="color:var(--glm)">8<small>/10</small></div>
       <div class="nm">GLM 5.3 Flash</div>
       <div class="rl">дефолт харнесса: быстро, дёшево, без остановок</div>
-      <div class="lnk"><a href="https://wotaniel.github.io/ag-anim-glm53flash/">Pages ↗</a><a href="https://github.com/Wotaniel/ag-anim-glm53flash">репо ↗</a></div>
     </div>
     <div class="mc" style="border-top-color:var(--gpt)">
       <div class="sc" style="color:var(--gpt)">0<small>/10</small></div>
       <div class="nm">GPT 6 Luna</div>
       <div class="rl">сдала статику при красивом отчёте</div>
-      <div class="lnk"><a href="https://wotaniel.github.io/ag-anim-gpt6luna/">Pages ↗</a><a href="https://github.com/Wotaniel/ag-anim-gpt6luna">репо ↗</a></div>
     </div>
     <div class="mc" style="border-top-color:var(--qwn)">
       <div class="sc" style="color:var(--qwn)">0<small>/10</small></div>
@@ -110,7 +106,6 @@
   </div>
 
   <h2>Числа рядом</h2>
-  <div class="h2sub">Колонки — по оценке. <span class="best" style="font-size:11px">best</span> и <span class="worst" style="font-size:11px">worst</span> — в каждой строке.</div>
   <div class="card" style="padding:8px 10px">
     <table>
       <thead><tr>
@@ -140,6 +135,18 @@
           <td><span class="sm">0 остановок, сама</span></td>
           <td><span class="sm">2 остановки → автоответчик</span></td>
           <td><span class="sm">таймауты, 2 попытки</span></td></tr>
+        <tr><td class="lab"><b>Результат</b></td>
+          <td><span class="best" style="font-size:13px">✓ Pages + .keyshape</span></td>
+          <td><span class="best" style="font-size:13px">✓ Pages + .keyshape</span></td>
+          <td><span class="best" style="font-size:13px">✓ Pages + .keyshape</span></td>
+          <td><span class="worst" style="font-size:13px">⚠ Pages, но статика</span></td>
+          <td><span class="worst" style="font-size:13px">✗ нет</span></td></tr>
+        <tr><td class="lab"><b>Ссылки</b></td>
+          <td><a href="https://wotaniel.github.io/ag-anim-dsv41flash/" style="color:var(--dsv)">Pages ↗</a> · <a href="https://github.com/Wotaniel/ag-anim-dsv41flash" style="color:var(--muted)">репо ↗</a></td>
+          <td><a href="https://wotaniel.github.io/ag-anim-haiku55/" style="color:var(--hai)">Pages ↗</a> · <a href="https://github.com/Wotaniel/ag-anim-haiku55" style="color:var(--muted)">репо ↗</a></td>
+          <td><a href="https://wotaniel.github.io/ag-anim-glm53flash/" style="color:var(--glm)">Pages ↗</a> · <a href="https://github.com/Wotaniel/ag-anim-glm53flash" style="color:var(--muted)">репо ↗</a></td>
+          <td><a href="https://wotaniel.github.io/ag-anim-gpt6luna/" style="color:var(--gpt)">Pages ↗</a> · <a href="https://github.com/Wotaniel/ag-anim-gpt6luna" style="color:var(--muted)">репо ↗</a></td>
+          <td><span class="sm">нет</span></td></tr>
       </tbody>
     </table>
   </div>
@@ -235,7 +242,7 @@
       <div class="who"><span style="color:var(--gpt)">GPT 6 Luna</span> — красивый отчёт, нулевой результат</div>
       <div class="txt">0/10: статичные заглушки при 25K токенов отчёта и «валидациях XML». Дешёвая настолько, насколько пустая.</div>
     </div>
-    <div class="vd wide" style="border-left-color:var(--qwn)">
+    <div class="vd" style="border-left-color:var(--qwn)">
       <div class="who"><span style="color:var(--qwn)">Qwen3.8 Flash</span> — не выживает в агентских цепочках</div>
       <div class="txt">Таймауты шлюза на 200K+ контексте, чистый перезапуск повторил судьбу. Короткие задачи — норм, длинные сессии — нет.</div>
     </div>
