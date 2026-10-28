@@ -3,251 +3,246 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Бенчмарк моделей TokenGuard — 28.10.2026</title>
+<title>Бенчмарк моделей TokenGuard — анимация с нуля, 28.10.2026</title>
 <style>
   :root{
-    --bg:#0d1117; --card:#161b22; --card2:#1c2128; --line:#2d333b;
-    --text:#e6edf3; --muted:#8b949e; --dim:#6e7681;
-    --glm:#67B279; --dsv:#58a6ff; --gpt:#bc8cff; --hai:#e3b341; --qwn:#f85149;
+    --bg:#0d1117; --card:#161b22; --line:#2d333b; --text:#e6edf3; --muted:#8b949e; --dim:#6e7681;
+    --dsv:#58a6ff; --hai:#e3b341; --glm:#67B279; --gpt:#bc8cff; --qwn:#f85149;
     --ok:#3fb950; --warn:#d29922; --bad:#f85149;
   }
   *{margin:0;padding:0;box-sizing:border-box}
-  body{background:var(--bg);color:var(--text);font:15px/1.5 -apple-system,"SF Pro Text","Segoe UI",Roboto,sans-serif;padding:44px 20px 80px}
-  .wrap{max-width:1150px;margin:0 auto}
-  h1{font-size:27px;font-weight:750;letter-spacing:-.02em}
-  .sub{color:var(--muted);margin:6px 0 26px;font-size:14px}
+  body{background:var(--bg);color:var(--text);font:15px/1.55 -apple-system,"SF Pro Text","Segoe UI",Roboto,sans-serif;padding:48px 24px 90px}
+  .wrap{max-width:980px;margin:0 auto}
+  h1{font-size:26px;font-weight:750;letter-spacing:-.02em}
+  .sub{color:var(--muted);font-size:14px;margin:8px 0 8px}
   .sub b{color:var(--text)}
-  h2{font-size:18px;font-weight:700;margin:42px 0 4px}
-  .h2sub{color:var(--muted);font-size:13px;margin-bottom:16px}
-  .legend{display:flex;gap:18px;flex-wrap:wrap;margin:14px 0 18px;font-size:13px}
-  .legend span{color:var(--muted)}
-  .legend b{color:var(--text);font-weight:600}
-  .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:0}
-  table{border-collapse:separate;border-spacing:0;width:100%}
-  th,td{padding:10px 12px;text-align:left;vertical-align:middle}
-  thead th{font-size:13px;border-bottom:1px solid var(--line);padding-bottom:12px}
-  thead th .nm{font-weight:650;font-size:14px}
-  thead th .md{display:block;font-size:10.5px;color:var(--dim);font-weight:400;margin-top:2px}
-  tbody tr{background:var(--card)}
-  tbody tr:nth-child(even){background:#131920}
-  tbody td{border-bottom:6px solid var(--bg)}
-  tbody tr:last-child td{border-bottom:none;border-radius:0 0 14px 14px}
-  thead th:first-child{border-radius:14px 0 0 0;background:var(--card)}
-  thead th:last-child{border-radius:0 14px 0 0;background:var(--card)}
-  td.lab{color:var(--muted);font-size:12.5px;width:170px}
-  td.lab b{display:block;color:var(--text);font-size:13.5px;font-weight:650}
-  .cell{min-width:130px}
-  .val{font-weight:700;font-size:14.5px;font-variant-numeric:tabular-nums;margin-bottom:4px}
-  .val small{font-size:11px;color:var(--muted);font-weight:500}
-  .track{height:7px;background:var(--card2);border-radius:4px;overflow:hidden;min-width:110px}
-  .fill{height:100%;border-radius:4px}
-  .best{position:relative}
-  .best .val:after{content:"best";font-size:9px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#0d1117;background:var(--ok);padding:1px 6px;border-radius:4px;margin-left:8px;vertical-align:2px}
-  .worst .val:after{content:"worst";font-size:9px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#0d1117;background:var(--bad);padding:1px 6px;border-radius:4px;margin-left:8px;vertical-align:2px}
-  .chip{display:inline-block;font-size:11px;padding:2px 9px;border-radius:14px;border:1px solid var(--line);color:var(--muted);margin:1px 2px 1px 0;white-space:nowrap}
-  .chip.ok{color:var(--ok);border-color:rgba(63,185,80,.45)}
-  .chip.warn{color:var(--warn);border-color:rgba(210,153,34,.45)}
-  .chip.bad{color:var(--bad);border-color:rgba(248,81,73,.45)}
-  .score{font-size:22px;font-weight:800;letter-spacing:-.02em}
-  .score small{font-size:11px;color:var(--dim);font-weight:600}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px 22px;margin-top:14px}
-  .scatter{position:relative;height:340px;margin:10px 0 0}
-  .saxis{position:absolute;background:var(--line)}
-  .sx{left:40px;right:0;bottom:34px;height:1px}
-  .sy{left:40px;top:0;bottom:34px;width:1px}
-  .pt{position:absolute;width:15px;height:15px;border-radius:50%;transform:translate(-50%,50%);border:2px solid var(--bg);box-shadow:0 0 0 1px var(--line)}
-  .pt-l{position:absolute;transform:translate(10px,-50%);font-size:12px;font-weight:650;white-space:nowrap}
-  .pt-l small{display:block;font-size:10.5px;color:var(--muted);font-weight:500}
-  .xlab{position:absolute;bottom:10px;transform:translateX(-50%);font-size:10.5px;color:var(--dim)}
-  .ylab{position:absolute;left:-6px;transform:translateY(50%);font-size:10.5px;color:var(--dim);text-align:right;width:32px}
-  .axt{position:absolute;font-size:11px;color:var(--muted)}
-  .mrow{display:grid;grid-template-columns:150px 1fr 90px;gap:10px;align-items:center;padding:6px 0;border-top:1px solid var(--line);font-size:13px}
-  .mrow:first-of-type{border-top:none}
-  .verdicts{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:14px}
-  .vd{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--line);border-radius:12px;padding:14px 16px}
+  a{color:inherit;text-decoration:none}
+  a:hover{text-decoration:underline}
+
+  /* карточки моделей */
+  .models{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin:26px 0 6px}
+  .mc{background:var(--card);border:1px solid var(--line);border-top:3px solid var(--line);border-radius:14px;padding:16px 14px 14px}
+  .mc .sc{font-size:34px;font-weight:800;letter-spacing:-.03em;line-height:1}
+  .mc .sc small{font-size:13px;color:var(--dim);font-weight:600}
+  .mc .nm{font-weight:700;font-size:13.5px;margin:8px 0 2px}
+  .mc .rl{font-size:11px;color:var(--muted);line-height:1.45;min-height:46px}
+  .mc .lnk{font-size:11px;margin-top:8px;display:flex;gap:8px;flex-wrap:wrap}
+  .mc .lnk a{color:var(--dsv)}
+  .mc:hover{background:#1a2029}
+
+  h2{font-size:17px;font-weight:700;margin:46px 0 4px}
+  .h2sub{color:var(--muted);font-size:13px;margin-bottom:18px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px 24px}
+  .card + .card{margin-top:14px}
+
+  /* матрица чисел */
+  table{border-collapse:collapse;width:100%}
+  th,td{text-align:left;padding:11px 14px;font-variant-numeric:tabular-nums}
+  thead th{font-size:13.5px;font-weight:700;border-bottom:1px solid var(--line)}
+  thead th .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:0}
+  tbody td{border-bottom:1px solid #21262d;font-size:14.5px}
+  tbody tr:last-child td{border-bottom:none}
+  td.lab{color:var(--muted);font-size:12.5px;width:190px}
+  td.lab b{display:block;color:var(--text);font-size:13.5px}
+  .best{color:var(--ok);font-weight:700}
+  .best:after{content:" best";font-size:9px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;background:rgba(63,185,80,.15);color:var(--ok);border-radius:4px;padding:1px 5px;margin-left:6px;vertical-align:1px}
+  .worst{color:var(--bad)}
+  .worst:after{content:" worst";font-size:9px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;background:rgba(248,81,73,.15);color:var(--bad);border-radius:4px;padding:1px 5px;margin-left:6px;vertical-align:1px}
+  .sm{color:var(--muted);font-size:11.5px;font-weight:400}
+
+  /* барчаты */
+  .chart{margin-bottom:26px}
+  .chart:last-child{margin-bottom:0}
+  .chart .ct{font-size:13.5px;font-weight:700;margin-bottom:8px}
+  .chart .ct small{color:var(--muted);font-weight:500;font-size:12px}
+  .brow{display:grid;grid-template-columns:150px 1fr 74px;gap:12px;align-items:center;margin-bottom:7px}
+  .brow .bn{font-size:12.5px;color:var(--text);text-align:right}
+  .brow .bn small{display:block;color:var(--dim);font-size:10.5px}
+  .btrack{height:20px;background:#1a2029;border-radius:5px;overflow:hidden}
+  .bfill{height:100%;border-radius:5px;display:flex;align-items:center;justify-content:flex-end;padding-right:8px;font-size:11.5px;font-weight:700;color:#0d1117;min-width:0;white-space:nowrap}
+  .brow .bv{font-size:13px;font-weight:700;font-variant-numeric:tabular-nums}
+  .brow .bv small{display:block;font-size:10.5px;color:var(--dim);font-weight:500}
+
+  /* вердикты */
+  .verdicts{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+  .vd{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--line);border-radius:12px;padding:15px 17px}
   .vd .who{font-weight:700;font-size:13.5px;margin-bottom:4px}
   .vd .txt{color:var(--muted);font-size:12.8px}
-  .foot{color:var(--dim);font-size:11.5px;margin-top:30px;line-height:1.7}
-  @media(max-width:900px){.wrap{overflow-x:auto}}
+  .vd.wide{grid-column:1/-1}
+  .foot{color:var(--dim);font-size:11.5px;margin-top:34px;line-height:1.7}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <h1>Бенчмарк моделей TokenGuard</h1>
-  <div class="sub">Два реальных промпта Али · <b>28.10.2026</b> · одинаковые песочницы, уникальные репо + Pages, автоответчик на вопросы · 5 моделей · ≈ $2.6 суммарно · <a href="https://wotaniel.github.io/tokenguard-benchmark/" style="color:var(--dsv)">эта страница ↗</a></div>
+  <h1>Бенчмарк моделей TokenGuard: анимация с нуля</h1>
+  <div class="sub">Задача AG-60517 из реальной работы: выгрузить ассеты из Figma → собрать два .keyshape-проекта (16:9 и 9:16) → задеплоить на GitHub Pages. <b>28.10.2026</b>, промпт один в один, у каждой модели своя песочница и своё репо, остановки с вопросами снимал автоответчик. Суммарно ≈ $2.3.</div>
 
-  <h2 style="margin-top:0">Результаты вживую — открой и оцени сам</h2>
-  <div class="h2sub">Задача 2 (анимация): <a href="https://wotaniel.github.io/ag-anim-dsv41flash/" style="color:var(--dsv)">DeepSeek ↗</a> · <a href="https://wotaniel.github.io/ag-anim-haiku55/" style="color:var(--hai)">Haiku ↗</a> · <a href="https://wotaniel.github.io/ag-anim-glm53flash/" style="color:var(--glm)">GLM ↗</a> · <a href="https://wotaniel.github.io/ag-anim-gpt6luna/" style="color:var(--gpt)">GPT Luna (статика) ↗</a> · репо: <a href="https://github.com/Wotaniel/ag-anim-dsv41flash" style="color:var(--dsv)">dsv41</a> · <a href="https://github.com/Wotaniel/ag-anim-haiku55" style="color:var(--hai)">haiku</a> · <a href="https://github.com/Wotaniel/ag-anim-glm53flash" style="color:var(--glm)">glm</a> · <a href="https://github.com/Wotaniel/ag-anim-gpt6luna" style="color:var(--gpt)">luna</a>.<br>Задача 1 (превью-страницы): <a href="https://wotaniel.github.io/ag-abp-glm53flash/" style="color:var(--glm)">GLM ↗</a> · <a href="https://wotaniel.github.io/ag-abp-dsv41flash/" style="color:var(--dsv)">DeepSeek ↗</a> · <a href="https://wotaniel.github.io/ag-abp-haiku55/" style="color:var(--hai)">Haiku ↗</a>. У Qwen и GPT Luna в задаче 1 деплоя нет (репо <a href="https://github.com/Wotaniel/ag-abp-qwen38flash" style="color:var(--qwn)">qwen — пустое ↗</a>, у Luna не создано).</div>
-
-  <h2 style="margin-top:0">Задача «Анимация App Store с нуля» — все метрики рядом</h2>
-  <div class="h2sub">AG-60517: Figma → .keyshape → GitHub Pages. Колонки отсортированы по оценке Али. Бары в строке — общая шкала; <span style="color:var(--ok)">best</span> / <span style="color:var(--bad)">worst</span> — по каждой метрике.</div>
-
-  <table>
-    <thead><tr>
-      <th></th>
-      <th><span class="nm"><span class="dot" style="background:var(--dsv)"></span>DeepSeek V4.1</span><span class="md">инженерная машина</span></th>
-      <th><span class="nm"><span class="dot" style="background:var(--hai)"></span>Haiku 5.5</span><span class="md">думает больше всех</span></th>
-      <th><span class="nm"><span class="dot" style="background:var(--glm)"></span>GLM 5.3 Flash</span><span class="md">дефолт харнесса</span></th>
-      <th><span class="nm"><span class="dot" style="background:var(--gpt)"></span>GPT 6 Luna</span><span class="md">дешёвая и пустая</span></th>
-      <th><span class="nm"><span class="dot" style="background:var(--qwn)"></span>Qwen3.8 Flash</span><span class="md">не для агентских цепочек</span></th>
-    </tr></thead>
-    <tbody>
-      <tr>
-        <td class="lab"><b>Оценка анимации</b>субъективно, Али</td>
-        <td class="cell best"><div class="score" style="color:var(--dsv)">9<small>/10</small></div></td>
-        <td class="cell best"><div class="score" style="color:var(--hai)">9<small>/10</small></div></td>
-        <td class="cell"><div class="score" style="color:var(--glm)">8<small>/10</small></div></td>
-        <td class="cell worst"><div class="score" style="color:var(--gpt)">0<small>/10</small></div></td>
-        <td class="cell worst"><div class="score" style="color:var(--qwn)">0<small>/10</small></div></td>
-      </tr>
-      <tr>
-        <td class="lab"><b>Цена</b>сессии opencode</td>
-        <td class="cell"><div class="val">$0.37</div><div class="track"><div class="fill" style="width:25%;background:var(--dsv)"></div></div></td>
-        <td class="cell worst"><div class="val">$1.50</div><div class="track"><div class="fill" style="width:100%;background:var(--hai)"></div></div></td>
-        <td class="cell best"><div class="val">$0.26</div><div class="track"><div class="fill" style="width:17%;background:var(--glm)"></div></div></td>
-        <td class="cell"><div class="val">$0.08</div><div class="track"><div class="fill" style="width:5%;background:var(--gpt)"></div></div></td>
-        <td class="cell"><div class="val">$0.11</div><div class="track"><div class="fill" style="width:7%;background:var(--qwn)"></div></div></td>
-      </tr>
-      <tr>
-        <td class="lab"><b>Время до финала</b>кап 40 мин + продолжения</td>
-        <td class="cell"><div class="val">40 мин <small>кап, Pages успела</small></div><div class="track"><div class="fill" style="width:31%;background:var(--dsv)"></div></div></td>
-        <td class="cell"><div class="val">48 мин <small>кап + продолжение</small></div><div class="track"><div class="fill" style="width:37%;background:var(--hai)"></div></div></td>
-        <td class="cell best"><div class="val">25 мин <small>уложилась сама</small></div><div class="track"><div class="fill" style="width:19%;background:var(--glm)"></div></div></td>
-        <td class="cell"><div class="val">54 мин <small>80 c + 2 автоответа</small></div><div class="track"><div class="fill" style="width:42%;background:var(--gpt)"></div></div></td>
-        <td class="cell worst"><div class="val">~2 ч <small>убита, нулевой результат</small></div><div class="track"><div class="fill" style="width:100%;background:var(--qwn)"></div></div></td>
-      </tr>
-      <tr>
-        <td class="lab"><b>Анимация в .keyshape</b>ks:animate / abs-key-times</td>
-        <td class="cell best"><div class="val">22 <small>11+11, оба кадра</small></div><div class="track"><div class="fill" style="width:100%;background:var(--dsv)"></div></div></td>
-        <td class="cell"><div class="val">12</div><div class="track"><div class="fill" style="width:55%;background:var(--hai)"></div></div></td>
-        <td class="cell"><div class="val">16 <small>7+9</small></div><div class="track"><div class="fill" style="width:73%;background:var(--glm)"></div></div></td>
-        <td class="cell worst"><div class="val">0 <small>статика</small></div><div class="track"><div class="fill" style="width:2%;background:var(--gpt)"></div></div></td>
-        <td class="cell worst"><div class="val">—</div><div class="track"></div></td>
-      </tr>
-      <tr>
-        <td class="lab"><b>Reasoning-токены</b>сколько «думала»</td>
-        <td class="cell"><div class="val">55K</div><div class="track"><div class="fill" style="width:13%;background:var(--dsv)"></div></div></td>
-        <td class="cell worst"><div class="val">419K <small>×8 к остальным</small></div><div class="track"><div class="fill" style="width:100%;background:var(--hai)"></div></div></td>
-        <td class="cell best"><div class="val">43K</div><div class="track"><div class="fill" style="width:10%;background:var(--glm)"></div></div></td>
-        <td class="cell"><div class="val">51K</div><div class="track"><div class="fill" style="width:12%;background:var(--gpt)"></div></div></td>
-        <td class="cell"><div class="val">25K</div><div class="track"><div class="fill" style="width:6%;background:var(--qwn)"></div></div></td>
-      </tr>
-      <tr>
-        <td class="lab"><b>Токены</b>вход / выход / reasoning</td>
-        <td class="cell"><div class="val" style="font-size:13px">133K / 51K / 55K</div></td>
-        <td class="cell"><div class="val" style="font-size:13px">0.1K / 45K / 419K</div></td>
-        <td class="cell"><div class="val" style="font-size:13px">122K / 24K / 43K</div></td>
-        <td class="cell"><div class="val" style="font-size:13px">0.2K / 25K / 51K</div></td>
-        <td class="cell"><div class="val" style="font-size:13px">281K / 13K / 25K</div></td>
-      </tr>
-      <tr>
-        <td class="lab"><b>Цена за балл</b>цена ÷ оценка</td>
-        <td class="cell"><div class="val">$0.041</div><div class="track"><div class="fill" style="width:25%;background:var(--dsv)"></div></div></td>
-        <td class="cell worst"><div class="val">$0.167</div><div class="track"><div class="fill" style="width:100%;background:var(--hai)"></div></div></td>
-        <td class="cell best"><div class="val">$0.033</div><div class="track"><div class="fill" style="width:20%;background:var(--glm)"></div></div></td>
-        <td class="cell worst"><div class="val">∞ <small>0 баллов</small></div><div class="track"></div></td>
-        <td class="cell worst"><div class="val">∞</div><div class="track"></div></td>
-      </tr>
-      <tr>
-        <td class="lab"><b>Как шёл процесс</b></td>
-        <td class="cell"><span class="chip ok">деплой + Pages</span><span class="chip ok">пиксельная сверка с Figma</span><span class="chip warn">отчёт оборвал кап</span><br><a class="chip ok" href="https://wotaniel.github.io/ag-anim-dsv41flash/">Pages ↗</a><a class="chip" href="https://github.com/Wotaniel/ag-anim-dsv41flash">репо ↗</a></td>
-        <td class="cell"><span class="chip ok">деплой + Pages</span><span class="chip warn">остановка: «чужой коммит?»</span><span class="chip warn">продолжена автоответчиком</span><br><a class="chip ok" href="https://wotaniel.github.io/ag-anim-haiku55/">Pages ↗</a><a class="chip" href="https://github.com/Wotaniel/ag-anim-haiku55">репо ↗</a></td>
-        <td class="cell"><span class="chip ok">деплой + Pages</span><span class="chip ok">0 остановок</span><span class="chip ok">сама разрулила gh-аккаунты</span><br><a class="chip ok" href="https://wotaniel.github.io/ag-anim-glm53flash/">Pages ↗</a><a class="chip" href="https://github.com/Wotaniel/ag-anim-glm53flash">репо ↗</a></td>
-        <td class="cell"><span class="chip ok">деплой + Pages</span><span class="chip bad">2 остановки на вопросах</span><span class="chip bad">сдала статику</span><br><a class="chip ok" href="https://wotaniel.github.io/ag-anim-gpt6luna/">Pages ↗</a><a class="chip" href="https://github.com/Wotaniel/ag-anim-gpt6luna">репо ↗</a></td>
-        <td class="cell"><span class="chip bad">деплоя нет</span><span class="chip bad">таймауты шлюза на 200K контексте</span><span class="chip bad">перезапуск повторил судьбу</span></td>
-      </tr>
-    </tbody>
-  </table>
-
-  <h2>Цена × качество</h2>
-  <div class="h2sub">Идеальная зона — левый верх: дорогое качество дёшево. Все модели теста 2.</div>
-  <div class="card">
-    <div class="scatter">
-      <div class="saxis sx"></div><div class="saxis sy"></div>
-      <div class="ylab" style="bottom:34px">10</div>
-      <div class="ylab" style="bottom:calc(34px + 122px)">5</div>
-      <div class="ylab" style="bottom:calc(34px + 244px)">0</div>
-      <div class="xlab" style="left:calc(40px + 0px)">0</div>
-      <div class="xlab" style="left:calc(40px + 140px)">$0.40</div>
-      <div class="xlab" style="left:calc(40px + 280px)">$0.80</div>
-      <div class="xlab" style="left:calc(40px + 420px)">$1.20</div>
-      <div class="xlab" style="left:calc(40px + 530px)">$1.50</div>
-      <div class="axt" style="right:0;bottom:12px">цена, $ →</div>
-      <div class="axt" style="left:2px;top:6px">↑ оценка анимации</div>
-      <!-- y: 340-34=306px на 10 баллов → 30.6px/балл; x: 40px отступ + 530px на $1.50 → 353px/$ -->
-      <div class="pt" style="left:171px;bottom:313px;background:var(--dsv)"></div><div class="pt-l" style="left:181px;bottom:308px;color:var(--dsv)">DeepSeek 9/10<small>$0.37 · 40 мин · 22 ключа</small></div>
-      <div class="pt" style="left:570px;bottom:313px;background:var(--hai)"></div><div class="pt-l" style="left:580px;bottom:308px;color:var(--hai)">Haiku 9/10<small>$1.50 · 48 мин · 12 ключей</small></div>
-      <div class="pt" style="left:132px;bottom:282px;background:var(--glm)"></div><div class="pt-l" style="left:142px;bottom:277px;color:var(--glm)">GLM 8/10<small>$0.26 · 25 мин · 16 ключей</small></div>
-      <div class="pt" style="left:68px;bottom:37px;background:var(--gpt)"></div><div class="pt-l" style="left:78px;bottom:32px;color:var(--gpt)">GPT 6 Luna 0/10<small>$0.08 · статика</small></div>
-      <div class="pt" style="left:79px;bottom:37px;background:var(--qwn)"></div><div class="pt-l" style="left:89px;bottom:8px;color:var(--qwn)">Qwen 0/10<small>$0.11 · нет результата</small></div>
+  <div class="models">
+    <div class="mc" style="border-top-color:var(--dsv)">
+      <div class="sc" style="color:var(--dsv)">9<small>/10</small></div>
+      <div class="nm">DeepSeek V4.1</div>
+      <div class="rl">самое богатое движение, самопроверка пиксельным диффом</div>
+      <div class="lnk"><a href="https://wotaniel.github.io/ag-anim-dsv41flash/">Pages ↗</a><a href="https://github.com/Wotaniel/ag-anim-dsv41flash">репо ↗</a></div>
+    </div>
+    <div class="mc" style="border-top-color:var(--hai)">
+      <div class="sc" style="color:var(--hai)">9<small>/10</small></div>
+      <div class="nm">Haiku 5.5</div>
+      <div class="rl">то же качество, но в 4 раза дороже DeepSeek</div>
+      <div class="lnk"><a href="https://wotaniel.github.io/ag-anim-haiku55/">Pages ↗</a><a href="https://github.com/Wotaniel/ag-anim-haiku55">репо ↗</a></div>
+    </div>
+    <div class="mc" style="border-top-color:var(--glm)">
+      <div class="sc" style="color:var(--glm)">8<small>/10</small></div>
+      <div class="nm">GLM 5.3 Flash</div>
+      <div class="rl">дефолт харнесса: быстро, дёшево, без остановок</div>
+      <div class="lnk"><a href="https://wotaniel.github.io/ag-anim-glm53flash/">Pages ↗</a><a href="https://github.com/Wotaniel/ag-anim-glm53flash">репо ↗</a></div>
+    </div>
+    <div class="mc" style="border-top-color:var(--gpt)">
+      <div class="sc" style="color:var(--gpt)">0<small>/10</small></div>
+      <div class="nm">GPT 6 Luna</div>
+      <div class="rl">сдала статику при красивом отчёте</div>
+      <div class="lnk"><a href="https://wotaniel.github.io/ag-anim-gpt6luna/">Pages ↗</a><a href="https://github.com/Wotaniel/ag-anim-gpt6luna">репо ↗</a></div>
+    </div>
+    <div class="mc" style="border-top-color:var(--qwn)">
+      <div class="sc" style="color:var(--qwn)">0<small>/10</small></div>
+      <div class="nm">Qwen3.8 Flash</div>
+      <div class="rl">зависла на таймаутах шлюза, результата нет</div>
     </div>
   </div>
 
-  <h2>Задача 1 · «Превью-страница с видео» — короче и грязнее</h2>
-  <div class="h2sub">Промпт из реальной работы: собрать страницу с видео и задеплоить. Здесь GPT 6 Luna отказалась пушить («только через PR»), Qwen убила сеть.</div>
-  <table>
-    <thead><tr>
-      <th></th>
-      <th><span class="nm"><span class="dot" style="background:var(--glm)"></span>GLM</span></th>
-      <th><span class="nm"><span class="dot" style="background:var(--dsv)"></span>DeepSeek</span></th>
-      <th><span class="nm"><span class="dot" style="background:var(--hai)"></span>Haiku</span></th>
-      <th><span class="nm"><span class="dot" style="background:var(--qwn)"></span>Qwen</span></th>
-      <th><span class="nm"><span class="dot" style="background:var(--gpt)"></span>GPT Luna</span></th>
-    </tr></thead>
-    <tbody>
-      <tr>
-        <td class="lab"><b>Результат</b></td>
-        <td class="cell"><span class="chip ok">✓ Pages</span><a class="chip" href="https://wotaniel.github.io/ag-abp-glm53flash/">открыть ↗</a></td>
-        <td class="cell"><span class="chip ok">✓ Pages</span><a class="chip" href="https://wotaniel.github.io/ag-abp-dsv41flash/">открыть ↗</a></td>
-        <td class="cell"><span class="chip warn">⚠ проверила чужой билд</span><a class="chip" href="https://wotaniel.github.io/ag-abp-haiku55/">открыть ↗</a></td>
-        <td class="cell"><span class="chip bad">✗ сеть оборвала</span><a class="chip" href="https://github.com/Wotaniel/ag-abp-qwen38flash">пустое репо ↗</a></td>
-        <td class="cell"><span class="chip warn">⚠ остановилась на подтверждении → доведена в задаче 2</span></td>
-      </tr>
-      <tr>
-        <td class="lab"><b>Время</b></td>
-        <td class="cell best"><div class="val">6 мин</div><div class="track"><div class="fill" style="width:26%;background:var(--glm)"></div></div></td>
-        <td class="cell"><div class="val">10 мин</div><div class="track"><div class="fill" style="width:44%;background:var(--dsv)"></div></div></td>
-        <td class="cell"><div class="val">7 мин</div><div class="track"><div class="fill" style="width:31%;background:var(--hai)"></div></div></td>
-        <td class="cell worst"><div class="val">23 мин</div><div class="track"><div class="fill" style="width:100%;background:var(--qwn)"></div></div></td>
-        <td class="cell best"><div class="val">1.5 мин</div><div class="track"><div class="fill" style="width:7%;background:var(--gpt)"></div></div></td>
-      </tr>
-      <tr>
-        <td class="lab"><b>Цена</b></td>
-        <td class="cell"><div class="val">$0.05</div><div class="track"><div class="fill" style="width:52%;background:var(--glm)"></div></div></td>
-        <td class="cell worst"><div class="val">$0.10</div><div class="track"><div class="fill" style="width:100%;background:var(--dsv)"></div></div></td>
-        <td class="cell"><div class="val">$0.04</div><div class="track"><div class="fill" style="width:44%;background:var(--hai)"></div></div></td>
-        <td class="cell"><div class="val">$0.06</div><div class="track"><div class="fill" style="width:62%;background:var(--qwn)"></div></div></td>
-        <td class="cell best"><div class="val">$0.002</div><div class="track"><div class="fill" style="width:2%;background:var(--gpt)"></div></div></td>
-      </tr>
-    </tbody>
-  </table>
+  <h2>Числа рядом</h2>
+  <div class="h2sub">Колонки — по оценке. <span class="best" style="font-size:11px">best</span> и <span class="worst" style="font-size:11px">worst</span> — в каждой строке.</div>
+  <div class="card" style="padding:8px 10px">
+    <table>
+      <thead><tr>
+        <th></th>
+        <th><span class="dot" style="background:var(--dsv)"></span>DeepSeek</th>
+        <th><span class="dot" style="background:var(--hai)"></span>Haiku</th>
+        <th><span class="dot" style="background:var(--glm)"></span>GLM</th>
+        <th><span class="dot" style="background:var(--gpt)"></span>GPT Luna</th>
+        <th><span class="dot" style="background:var(--qwn)"></span>Qwen</th>
+      </tr></thead>
+      <tbody>
+        <tr><td class="lab"><b>Оценка анимации</b>субъективно, Али</td>
+          <td class="best">9/10</td><td class="best">9/10</td><td>8/10</td><td class="worst">0/10</td><td class="worst">0/10</td></tr>
+        <tr><td class="lab"><b>Цена</b>сессии opencode</td>
+          <td>$0.37</td><td class="worst">$1.50</td><td class="best">$0.26</td><td>$0.08</td><td>$0.11</td></tr>
+        <tr><td class="lab"><b>Время до финала</b></td>
+          <td>40 мин <span class="sm">кап</span></td><td>48 мин</td><td class="best">25 мин</td><td>54 мин</td><td class="worst">~2 ч <span class="sm">впустую</span></td></tr>
+        <tr><td class="lab"><b>Токены</b>in / out / reasoning</td>
+          <td>133 / 51 / 55K</td><td>0.1 / 45 / <b>419K</b></td><td>122 / 24 / 43K</td><td>0.2 / 25 / 51K</td><td>281 / 13 / 25K</td></tr>
+        <tr><td class="lab"><b>Анимация в .keyshape</b>ks:animate-ключи</td>
+          <td class="best">22</td><td>12</td><td>16</td><td class="worst">0</td><td class="worst">—</td></tr>
+        <tr><td class="lab"><b>Цена за балл</b>цена ÷ оценка</td>
+          <td>$0.041</td><td class="worst">$0.167</td><td class="best">$0.033</td><td class="worst">∞</td><td class="worst">∞</td></tr>
+        <tr><td class="lab"><b>Ход процесса</b></td>
+          <td><span class="sm">Pages успела, отчёт оборвал кап</span></td>
+          <td><span class="sm">остановка → автоответчик</span></td>
+          <td><span class="sm">0 остановок, сама</span></td>
+          <td><span class="sm">2 остановки → автоответчик</span></td>
+          <td><span class="sm">таймауты, 2 попытки</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Графики</h2>
+  <div class="h2sub">Одинаковый порядок моделей на всех графиках — сравнение ряд к ряду. Числа на барах.</div>
+
+  <div class="card">
+    <div class="chart">
+      <div class="ct">Цена <small>$ за весь прогон</small></div>
+      <div class="brow"><div class="bn">DeepSeek</div><div class="btrack"><div class="bfill" style="width:24.7%;background:var(--dsv)"></div></div><div class="bv">$0.37</div></div>
+      <div class="brow"><div class="bn">Haiku</div><div class="btrack"><div class="bfill" style="width:100%;background:var(--hai)"></div></div><div class="bv">$1.50</div></div>
+      <div class="brow"><div class="bn">GLM</div><div class="btrack"><div class="bfill" style="width:17.3%;background:var(--glm)"></div></div><div class="bv">$0.26</div></div>
+      <div class="brow"><div class="bn">GPT Luna</div><div class="btrack"><div class="bfill" style="width:5.3%;background:var(--gpt)"></div></div><div class="bv">$0.08</div></div>
+      <div class="brow"><div class="bn">Qwen</div><div class="btrack"><div class="bfill" style="width:7.3%;background:var(--qwn)"></div></div><div class="bv">$0.11</div></div>
+    </div>
+    <div class="chart">
+      <div class="ct">Время до финала <small>мин; у Qwen ~2 ч впустую</small></div>
+      <div class="brow"><div class="bn">DeepSeek</div><div class="btrack"><div class="bfill" style="width:33.3%;background:var(--dsv)"></div></div><div class="bv">40<small>кап</small></div></div>
+      <div class="brow"><div class="bn">Haiku</div><div class="btrack"><div class="bfill" style="width:40%;background:var(--hai)"></div></div><div class="bv">48</div></div>
+      <div class="brow"><div class="bn">GLM</div><div class="btrack"><div class="bfill" style="width:20.8%;background:var(--glm)"></div></div><div class="bv">25</div></div>
+      <div class="brow"><div class="bn">GPT Luna</div><div class="btrack"><div class="bfill" style="width:45%;background:var(--gpt)"></div></div><div class="bv">54</div></div>
+      <div class="brow"><div class="bn">Qwen</div><div class="btrack"><div class="bfill" style="width:100%;background:var(--qwn)"></div></div><div class="bv">~120</div></div>
+    </div>
+    <div class="chart">
+      <div class="ct">Reasoning-токены <small>K — сколько «думала»</small></div>
+      <div class="brow"><div class="bn">DeepSeek</div><div class="btrack"><div class="bfill" style="width:13.1%;background:var(--dsv)"></div></div><div class="bv">55K</div></div>
+      <div class="brow"><div class="bn">Haiku</div><div class="btrack"><div class="bfill" style="width:100%;background:var(--hai)"></div></div><div class="bv">419K</div></div>
+      <div class="brow"><div class="bn">GLM</div><div class="btrack"><div class="bfill" style="width:10.3%;background:var(--glm)"></div></div><div class="bv">43K</div></div>
+      <div class="brow"><div class="bn">GPT Luna</div><div class="btrack"><div class="bfill" style="width:12.2%;background:var(--gpt)"></div></div><div class="bv">51K</div></div>
+      <div class="brow"><div class="bn">Qwen</div><div class="btrack"><div class="bfill" style="width:6%;background:var(--qwn)"></div></div><div class="bv">25K</div></div>
+    </div>
+    <div class="chart">
+      <div class="ct">Анимация в .keyshape <small>ks:animate-ключей; проверено разбором формата</small></div>
+      <div class="brow"><div class="bn">DeepSeek</div><div class="btrack"><div class="bfill" style="width:100%;background:var(--dsv)"></div></div><div class="bv">22</div></div>
+      <div class="brow"><div class="bn">Haiku</div><div class="btrack"><div class="bfill" style="width:54.5%;background:var(--hai)"></div></div><div class="bv">12</div></div>
+      <div class="brow"><div class="bn">GLM</div><div class="btrack"><div class="bfill" style="width:72.7%;background:var(--glm)"></div></div><div class="bv">16</div></div>
+      <div class="brow"><div class="bn">GPT Luna</div><div class="btrack"><div class="bfill" style="width:2%;background:var(--gpt)"></div></div><div class="bv">0</div></div>
+      <div class="brow"><div class="bn">Qwen</div><div class="btrack"></div><div class="bv" style="color:var(--dim)">—</div></div>
+    </div>
+  </div>
+
+  <h2>Цена × качество</h2>
+  <div class="h2sub">Целевая зона — левый верх: высоко и дёшево.</div>
+  <div class="card">
+    <svg viewBox="0 0 880 360" width="100%" height="auto" style="display:block">
+      <line x1="56" y1="20" x2="56" y2="324" stroke="#2d333b" stroke-width="1"/>
+      <line x1="56" y1="324" x2="860" y2="324" stroke="#2d333b" stroke-width="1"/>
+      <text x="44" y="28" fill="#6e7681" font-size="11" text-anchor="end">10</text>
+      <text x="44" y="168" fill="#6e7681" font-size="11" text-anchor="end">5</text>
+      <text x="44" y="328" fill="#6e7681" font-size="11" text-anchor="end">0</text>
+      <text x="56" y="344" fill="#6e7681" font-size="11">$0</text>
+      <text x="276" y="344" fill="#6e7681" font-size="11">$0.4</text>
+      <text x="496" y="344" fill="#6e7681" font-size="11">$0.8</text>
+      <text x="716" y="344" fill="#6e7681" font-size="11">$1.2</text>
+      <text x="850" y="344" fill="#6e7681" font-size="11">$1.5</text>
+      <text x="860" y="358" fill="#8b949e" font-size="11" text-anchor="end">цена, $ →</text>
+      <text x="12" y="14" fill="#8b949e" font-size="11">↑ оценка</text>
+      <!-- точки: x = 56 + цена*536.7 ; y = 324 - оценка*29.6 -->
+      <circle cx="255" cy="58" r="8" fill="#58a6ff" stroke="#0d1117" stroke-width="2"/>
+      <text x="270" y="54" fill="#58a6ff" font-size="12.5" font-weight="700">DeepSeek 9/10</text>
+      <text x="270" y="70" fill="#8b949e" font-size="10.5">$0.37 · 40 мин · 22 ключа</text>
+      <circle cx="861" cy="58" r="8" fill="#e3b341" stroke="#0d1117" stroke-width="2"/>
+      <text x="758" y="96" fill="#e3b341" font-size="12.5" font-weight="700" text-anchor="end">Haiku 9/10</text>
+      <text x="758" y="110" fill="#8b949e" font-size="10.5" text-anchor="end">$1.50 · 48 мин · 12 ключей</text>
+      <circle cx="196" cy="87" r="8" fill="#67B279" stroke="#0d1117" stroke-width="2"/>
+      <text x="211" y="83" fill="#67B279" font-size="12.5" font-weight="700">GLM 8/10</text>
+      <text x="211" y="99" fill="#8b949e" font-size="10.5">$0.26 · 25 мин · 16 ключей</text>
+      <circle cx="99" cy="324" r="8" fill="#bc8cff" stroke="#0d1117" stroke-width="2"/>
+      <text x="114" y="318" fill="#bc8cff" font-size="12.5" font-weight="700">GPT Luna 0/10</text>
+      <text x="114" y="332" fill="#8b949e" font-size="10.5">$0.08 · статика</text>
+      <circle cx="115" cy="324" r="8" fill="#f85149" stroke="#0d1117" stroke-width="2"/>
+      <text x="130" y="352" fill="#f85149" font-size="12.5" font-weight="700">Qwen 0/10</text>
+      <text x="130" y="366" fill="#8b949e" font-size="10.5" dy="-4">$0.11 · нет результата</text>
+    </svg>
+  </div>
 
   <h2>Вердикты</h2>
   <div class="verdicts">
     <div class="vd" style="border-left-color:var(--glm)">
-      <div class="who"><span class="dot" style="background:var(--glm)"></span>GLM 5.3 Flash — дефолт, менять не на что</div>
-      <div class="txt">8/10 за $0.26 и 25 минут, ноль остановок в обеих задачах, $0.033/балл — лучшая экономика. Быстрее всех, дешевле всех из доведших.</div>
+      <div class="who"><span style="color:var(--glm)">GLM 5.3 Flash</span> — дефолт, менять не на что</div>
+      <div class="txt">8/10 за $0.26 и 25 минут, ноль остановок, $0.033/балл — лучшая экономика теста.</div>
     </div>
     <div class="vd" style="border-left-color:var(--dsv)">
-      <div class="who"><span class="dot" style="background:var(--dsv)"></span>DeepSeek V4.1 — точечный апгрейд качества</div>
-      <div class="txt">9/10 и самый богатый .keyshape (22 ключа), сверяла движение с Figma-рендерами пиксельным диффом. +$0.11 к GLM за +1 балл — осмысленная цена для важных задач.</div>
+      <div class="who"><span style="color:var(--dsv)">DeepSeek V4.1</span> — апгрейд качества</div>
+      <div class="txt">9/10 и самый богатый .keyshape (22 ключа), сверяла движение с Figma пиксельным диффом. +$0.11 к GLM за +1 балл.</div>
     </div>
     <div class="vd" style="border-left-color:var(--hai)">
-      <div class="who"><span class="dot" style="background:var(--hai)"></span>Haiku 5.5 — те же 9/10, ×4.5 цена</div>
-      <div class="txt">Качество дотянуто, но 419K reasoning-токенов и $1.50 за балл-в-балл тот же результат, что у DeepSeek за $0.37. Окупаемости нет.</div>
+      <div class="who"><span style="color:var(--hai)">Haiku 5.5</span> — те же 9/10, ×4 цена</div>
+      <div class="txt">419K reasoning-токенов и $1.50 за балл-в-балл результат DeepSeek за $0.37. Глубина без окупаемости.</div>
     </div>
     <div class="vd" style="border-left-color:var(--gpt)">
-      <div class="who"><span class="dot" style="background:var(--gpt)"></span>GPT 6 Luna — красивый отчёт, нулевой результат</div>
-      <div class="txt">0/10: статичные заглушки при 25K токенов отчёта, «валидациях XML» и коммите с Refs. Дешёвая — ровно настолько, насколько пустая. Только задачи с автопроверкой.</div>
+      <div class="who"><span style="color:var(--gpt)">GPT 6 Luna</span> — красивый отчёт, нулевой результат</div>
+      <div class="txt">0/10: статичные заглушки при 25K токенов отчёта и «валидациях XML». Дешёвая настолько, насколько пустая.</div>
     </div>
-    <div class="vd" style="border-left-color:var(--qwn);grid-column:1/-1">
-      <div class="who"><span class="dot" style="background:var(--qwn)"></span>Qwen3.8 Flash — не выживает в агентских цепочках</div>
-      <div class="txt">Обе задачи сломаны: сеть (тест 1) и таймауты шлюза на 200K+ контексте (тест 2), чистый перезапуск повторил судьбу. На коротких задачах — норм, в длинных сессиях — нет.</div>
+    <div class="vd wide" style="border-left-color:var(--qwn)">
+      <div class="who"><span style="color:var(--qwn)">Qwen3.8 Flash</span> — не выживает в агентских цепочках</div>
+      <div class="txt">Таймауты шлюза на 200K+ контексте, чистый перезапуск повторил судьбу. Короткие задачи — норм, длинные сессии — нет.</div>
     </div>
   </div>
 
   <div class="foot">
-    Метод: промпт AG-60517 один в один из реальной работы · песочница на модель · прямой push разрешён явно · автоответчик отвечал на вопросы от имени Али (max 3 раунда) · результат проверен по содержимому .keyshape (unzip → document.keyshapex, ks:animate/abs-key-times), а не по отчётам · оценки анимации субъективные — Али, 28.10.2026 · токены/цена — сессии opencode. Живые Pages: ag-anim-glm53flash, ag-anim-dsv41flash, ag-anim-gpt6luna, ag-anim-haiku55 (github.com/Wotaniel). Qwen — две сессии суммарно ($0.069 + $0.038).
+    Метод: промпт один в один из реальной работы · песочница на модель · прямой push разрешён явно · автоответчик снимал остановки (max 3 раунда) · анимация проверена разбором .keyshape (ks:animate/abs-key-times), а не по отчётам моделей · оценки — Али, 28.10.2026 · токены/цена — сессии opencode · Qwen — две сессии суммарно ($0.069 + $0.038).
   </div>
 </div>
 </body>
